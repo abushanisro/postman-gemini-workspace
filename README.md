@@ -346,6 +346,11 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 
 **Ready to explore the power of Gemini AI?** Start with the [Getting Started Guide](docs/getting-started.md) and join thousands of developers building the future with AI!
 
+
 ---
 
 *This workspace is not officially affiliated with Google or Postman. It's a GCOS project to help developers work with Gemini APIs more effectively.
+
+![API Validation Tests](https://github.com/abushanisro/postman-gemini-workspace/blob/main/assets/api-validation-tests.png?raw=true)
+
+
