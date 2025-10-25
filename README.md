@@ -1,5 +1,8 @@
 # Gemini API Postman Workspace
 
+![API Health Check](https://github.com/abushanisro/postman-gemini-workspace/blob/main/assets/api-health-check.png?raw=true)
+
+
 A comprehensive Postman workspace for exploring, testing, and integrating with Google's Gemini APIs. This workspace provides pre-built collections, environments, tests, documentation, and automation tools to streamline your AI development workflow.
 
 
