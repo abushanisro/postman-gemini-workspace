@@ -2,7 +2,7 @@
 
 A comprehensive Postman workspace for exploring, testing, and integrating with Google's Gemini APIs. This workspace provides pre-built collections, environments, tests, documentation, and automation tools to streamline your AI development workflow.
 
-[![Validation](https://github.com/your-username/postman-gemini-workspace/actions/workflows/update-workspace.yml/badge.svg)](https://github.com/your-username/postman-gemini-workspace/actions/workflows/update-workspace.yml)
+
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![Postman](https://img.shields.io/badge/Postman-Collection-orange)](collections/)
 
