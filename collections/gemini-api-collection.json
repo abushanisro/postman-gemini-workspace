@@ -1,0 +1,125 @@
+{
+  "info": {
+    "name": "Google Gemini API Collection",
+    "description": "Comprehensive collection for Google Gemini APIs including text generation, chat, image generation, and code generation capabilities",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "apikey",
+    "apikey": [
+      {
+        "key": "key",
+        "value": "key",
+        "type": "string"
+      },
+      {
+        "key": "value",
+        "value": "{{GEMINI_API_KEY}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "https://generativelanguage.googleapis.com",
+      "type": "string"
+    },
+    {
+      "key": "api_version",
+      "value": "v1beta",
+      "type": "string"
+    },
+    {
+      "key": "model_name",
+      "value": "gemini-1.5-pro",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Text Generation",
+      "description": "Collection of requests for text generation using Gemini models",
+      "item": []
+    },
+    {
+      "name": "Chat & Conversation",
+      "description": "Multi-turn conversations and chat functionality",
+      "item": []
+    },
+    {
+      "name": "Vision & Image Analysis",
+      "description": "Image understanding and visual question answering",
+      "item": []
+    },
+    {
+      "name": "Code Generation",
+      "description": "Code generation and programming assistance",
+      "item": []
+    },
+    {
+      "name": "Content Safety",
+      "description": "Content filtering and safety checks",
+      "item": []
+    },
+    {
+      "name": "Model Management",
+      "description": "Model listing and information endpoints",
+      "item": []
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Global pre-request script for authentication and setup",
+          "if (!pm.environment.get('GEMINI_API_KEY')) {",
+          "    console.warn('GEMINI_API_KEY not found in environment variables');",
+          "    pm.test('API Key Check', function () {",
+          "        pm.expect(pm.environment.get('GEMINI_API_KEY')).to.not.be.undefined;",
+          "    });",
+          "}",
+          "",
+          "// Set request timestamp",
+          "pm.globals.set('timestamp', new Date().toISOString());",
+          "",
+          "// Validate required environment variables",
+          "const requiredVars = ['GEMINI_API_KEY', 'PROJECT_ID'];",
+          "requiredVars.forEach(variable => {",
+          "    if (!pm.environment.get(variable)) {",
+          "        console.warn(`Missing required environment variable: ${variable}`);",
+          "    }",
+          "});"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Global test script for common validations",
+          "pm.test('Status code is successful', function () {",
+          "    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+          "});",
+          "",
+          "pm.test('Response time is acceptable', function () {",
+          "    pm.expect(pm.response.responseTime).to.be.below(30000);",
+          "});",
+          "",
+          "pm.test('Response has valid JSON', function () {",
+          "    pm.response.to.have.jsonBody();",
+          "});",
+          "",
+          "// Log response for debugging",
+          "if (pm.response.code >= 400) {",
+          "    console.log('Error Response:', pm.response.json());",
+          "}"
+        ]
+      }
+    }
+  ]
+}

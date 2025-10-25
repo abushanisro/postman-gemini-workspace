@@ -1,0 +1,133 @@
+{
+  "id": "gemini-prod-environment",
+  "name": "Gemini API - Production",
+  "values": [
+    {
+      "key": "GEMINI_API_KEY",
+      "value": "YOUR_PRODUCTION_API_KEY_HERE",
+      "description": "Google AI Studio API key for production environment",
+      "type": "secret",
+      "enabled": true
+    },
+    {
+      "key": "PROJECT_ID",
+      "value": "your-project-id-prod",
+      "description": "Google Cloud Project ID for production",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "base_url",
+      "value": "https://generativelanguage.googleapis.com",
+      "description": "Base URL for Gemini API",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "api_version",
+      "value": "v1beta",
+      "description": "API version for Gemini services",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "model_name",
+      "value": "gemini-1.5-pro",
+      "description": "Default model for text generation",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "vision_model_name",
+      "value": "gemini-1.5-pro",
+      "description": "Model for vision and multimodal tasks",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "chat_model_name",
+      "value": "gemini-1.5-pro",
+      "description": "Model for chat and conversation",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "code_model_name",
+      "value": "gemini-1.5-pro",
+      "description": "Model optimized for code generation",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "request_timeout",
+      "value": "60000",
+      "description": "Request timeout in milliseconds (higher for production)",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "rate_limit_requests_per_minute",
+      "value": "300",
+      "description": "Higher rate limit for production environment",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "max_output_tokens",
+      "value": "8192",
+      "description": "Maximum output tokens for production",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "default_temperature",
+      "value": "0.3",
+      "description": "Conservative temperature for production (more predictable)",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "safety_threshold",
+      "value": "BLOCK_LOW_AND_ABOVE",
+      "description": "Stricter safety filtering for production",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "environment_type",
+      "value": "production",
+      "description": "Environment identifier",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "debug_mode",
+      "value": "false",
+      "description": "Disable debug logging for production",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "monitoring_enabled",
+      "value": "true",
+      "description": "Enable production monitoring and alerting",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "retry_attempts",
+      "value": "3",
+      "description": "Number of retry attempts for failed requests",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "cache_ttl_seconds",
+      "value": "300",
+      "description": "Cache TTL for production responses",
+      "type": "default",
+      "enabled": true
+    }
+  ],
+  "_postman_variable_scope": "environment"
+}

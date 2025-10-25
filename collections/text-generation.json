@@ -1,0 +1,214 @@
+{
+  "info": {
+    "name": "Text Generation",
+    "description": "Comprehensive text generation requests for Gemini models with various parameters and use cases",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Basic Text Generation",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"contents\": [\n    {\n      \"parts\": [\n        {\n          \"text\": \"Write a creative story about artificial intelligence in the future.\"\n        }\n      ]\n    }\n  ],\n  \"generationConfig\": {\n    \"temperature\": 0.7,\n    \"topK\": 40,\n    \"topP\": 0.95,\n    \"maxOutputTokens\": 1024\n  }\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/{{api_version}}/models/{{model_name}}:generateContent?key={{GEMINI_API_KEY}}",
+          "host": ["{{base_url}}"],
+          "path": ["{{api_version}}", "models", "{{model_name}}:generateContent"],
+          "query": [
+            {
+              "key": "key",
+              "value": "{{GEMINI_API_KEY}}"
+            }
+          ]
+        },
+        "description": "Basic text generation with standard parameters. Temperature controls creativity (0.0-2.0), topK limits vocabulary selection, topP controls nucleus sampling."
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Response contains generated text', function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property('candidates');",
+              "    pm.expect(jsonData.candidates).to.be.an('array');",
+              "    pm.expect(jsonData.candidates[0]).to.have.property('content');",
+              "    pm.expect(jsonData.candidates[0].content).to.have.property('parts');",
+              "    pm.expect(jsonData.candidates[0].content.parts[0]).to.have.property('text');",
+              "});",
+              "",
+              "pm.test('Generation metadata present', function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData.candidates[0]).to.have.property('finishReason');",
+              "    pm.expect(jsonData).to.have.property('usageMetadata');",
+              "});",
+              "",
+              "// Store generated text for potential use in subsequent requests",
+              "if (pm.response.code === 200) {",
+              "    const response = pm.response.json();",
+              "    pm.globals.set('last_generated_text', response.candidates[0].content.parts[0].text);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "High Creativity Generation",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"contents\": [\n    {\n      \"parts\": [\n        {\n          \"text\": \"Create an innovative product idea that combines AI with sustainable technology.\"\n        }\n      ]\n    }\n  ],\n  \"generationConfig\": {\n    \"temperature\": 1.4,\n    \"topK\": 64,\n    \"topP\": 0.9,\n    \"maxOutputTokens\": 2048,\n    \"candidateCount\": 1\n  }\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/{{api_version}}/models/{{model_name}}:generateContent?key={{GEMINI_API_KEY}}",
+          "host": ["{{base_url}}"],
+          "path": ["{{api_version}}", "models", "{{model_name}}:generateContent"],
+          "query": [
+            {
+              "key": "key",
+              "value": "{{GEMINI_API_KEY}}"
+            }
+          ]
+        },
+        "description": "High creativity text generation with increased temperature and top parameters for more creative and diverse outputs."
+      },
+      "response": []
+    },
+    {
+      "name": "Factual/Low Temperature Generation",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"contents\": [\n    {\n      \"parts\": [\n        {\n          \"text\": \"Explain the process of photosynthesis in plants, including the chemical equation.\"\n        }\n      ]\n    }\n  ],\n  \"generationConfig\": {\n    \"temperature\": 0.1,\n    \"topK\": 20,\n    \"topP\": 0.8,\n    \"maxOutputTokens\": 1024\n  }\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/{{api_version}}/models/{{model_name}}:generateContent?key={{GEMINI_API_KEY}}",
+          "host": ["{{base_url}}"],
+          "path": ["{{api_version}}", "models", "{{model_name}}:generateContent"],
+          "query": [
+            {
+              "key": "key",
+              "value": "{{GEMINI_API_KEY}}"
+            }
+          ]
+        },
+        "description": "Low temperature generation optimized for factual, consistent responses. Best for educational content, explanations, and technical documentation."
+      },
+      "response": []
+    },
+    {
+      "name": "System Instructions with Context",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"system_instruction\": {\n    \"parts\": [\n      {\n        \"text\": \"You are a helpful assistant specialized in software development. Always provide code examples and best practices.\"\n      }\n    ]\n  },\n  \"contents\": [\n    {\n      \"parts\": [\n        {\n          \"text\": \"How do I implement error handling in a REST API using Node.js?\"\n        }\n      ]\n    }\n  ],\n  \"generationConfig\": {\n    \"temperature\": 0.3,\n    \"topK\": 40,\n    \"topP\": 0.95,\n    \"maxOutputTokens\": 2048\n  }\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/{{api_version}}/models/{{model_name}}:generateContent?key={{GEMINI_API_KEY}}",
+          "host": ["{{base_url}}"],
+          "path": ["{{api_version}}", "models", "{{model_name}}:generateContent"],
+          "query": [
+            {
+              "key": "key",
+              "value": "{{GEMINI_API_KEY}}"
+            }
+          ]
+        },
+        "description": "Demonstrates system instructions to provide context and role definition for the AI model, improving response quality and consistency."
+      },
+      "response": []
+    },
+    {
+      "name": "Streaming Text Generation",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"contents\": [\n    {\n      \"parts\": [\n        {\n          \"text\": \"Write a detailed explanation of machine learning algorithms, covering supervised, unsupervised, and reinforcement learning.\"\n        }\n      ]\n    }\n  ],\n  \"generationConfig\": {\n    \"temperature\": 0.4,\n    \"topK\": 40,\n    \"topP\": 0.95,\n    \"maxOutputTokens\": 4096\n  }\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/{{api_version}}/models/{{model_name}}:streamGenerateContent?key={{GEMINI_API_KEY}}",
+          "host": ["{{base_url}}"],
+          "path": ["{{api_version}}", "models", "{{model_name}}:streamGenerateContent"],
+          "query": [
+            {
+              "key": "key",
+              "value": "{{GEMINI_API_KEY}}"
+            }
+          ]
+        },
+        "description": "Streaming generation for long-form content. Returns partial responses as they're generated, useful for real-time applications."
+      },
+      "response": []
+    },
+    {
+      "name": "Content Safety Settings",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"contents\": [\n    {\n      \"parts\": [\n        {\n          \"text\": \"Generate a discussion about controversial topics in technology.\"\n        }\n      ]\n    }\n  ],\n  \"safetySettings\": [\n    {\n      \"category\": \"HARM_CATEGORY_HARASSMENT\",\n      \"threshold\": \"BLOCK_MEDIUM_AND_ABOVE\"\n    },\n    {\n      \"category\": \"HARM_CATEGORY_HATE_SPEECH\",\n      \"threshold\": \"BLOCK_MEDIUM_AND_ABOVE\"\n    },\n    {\n      \"category\": \"HARM_CATEGORY_SEXUALLY_EXPLICIT\",\n      \"threshold\": \"BLOCK_MEDIUM_AND_ABOVE\"\n    },\n    {\n      \"category\": \"HARM_CATEGORY_DANGEROUS_CONTENT\",\n      \"threshold\": \"BLOCK_MEDIUM_AND_ABOVE\"\n    }\n  ],\n  \"generationConfig\": {\n    \"temperature\": 0.5,\n    \"maxOutputTokens\": 1024\n  }\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/{{api_version}}/models/{{model_name}}:generateContent?key={{GEMINI_API_KEY}}",
+          "host": ["{{base_url}}"],
+          "path": ["{{api_version}}", "models", "{{model_name}}:generateContent"],
+          "query": [
+            {
+              "key": "key",
+              "value": "{{GEMINI_API_KEY}}"
+            }
+          ]
+        },
+        "description": "Demonstrates safety settings configuration to control content filtering. Adjust thresholds based on application requirements."
+      },
+      "response": []
+    }
+  ]
+}

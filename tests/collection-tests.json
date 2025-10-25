@@ -1,0 +1,405 @@
+{
+  "info": {
+    "name": "Gemini API Test Suite",
+    "description": "Comprehensive test collection for validating Gemini API functionality",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "test_run_id",
+      "value": "{{$timestamp}}",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health Check Tests",
+      "item": [
+        {
+          "name": "API Connectivity Test",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/{{api_version}}/models?key={{GEMINI_API_KEY}}",
+              "host": ["{{base_url}}"],
+              "path": ["{{api_version}}", "models"],
+              "query": [
+                {
+                  "key": "key",
+                  "value": "{{GEMINI_API_KEY}}"
+                }
+              ]
+            },
+            "description": "Basic connectivity test to ensure API is accessible"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('API is accessible', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response contains models', function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response).to.have.property('models');",
+                  "    pm.expect(response.models).to.be.an('array');",
+                  "});",
+                  "",
+                  "pm.test('Gemini models available', function () {",
+                  "    const response = pm.response.json();",
+                  "    const modelNames = response.models.map(m => m.name);",
+                  "    const hasGeminiModel = modelNames.some(name => name.includes('gemini'));",
+                  "    pm.expect(hasGeminiModel).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Authentication Tests",
+      "item": [
+        {
+          "name": "Valid API Key Test",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"contents\":[{\"parts\":[{\"text\":\"Hello\"}]}]}"
+            },
+            "url": {
+              "raw": "{{base_url}}/{{api_version}}/models/{{model_name}}:generateContent?key={{GEMINI_API_KEY}}",
+              "host": ["{{base_url}}"],
+              "path": ["{{api_version}}", "models", "{{model_name}}:generateContent"],
+              "query": [
+                {
+                  "key": "key",
+                  "value": "{{GEMINI_API_KEY}}"
+                }
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Authentication successful', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "const response = pm.response.json();",
+                  "TestUtils.validateGeminiResponse(response);",
+                  "AuthenticationTests.validateApiKey();",
+                  "AuthenticationTests.validateRateLimit();"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Load test utilities",
+                  "eval(pm.globals.get('test_utilities'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Invalid API Key Test",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"contents\":[{\"parts\":[{\"text\":\"Hello\"}]}]}"
+            },
+            "url": {
+              "raw": "{{base_url}}/{{api_version}}/models/{{model_name}}:generateContent?key=invalid_key_12345",
+              "host": ["{{base_url}}"],
+              "path": ["{{api_version}}", "models", "{{model_name}}:generateContent"],
+              "query": [
+                {
+                  "key": "key",
+                  "value": "invalid_key_12345"
+                }
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Invalid API key rejected', function () {",
+                  "    pm.response.to.have.status(401);",
+                  "});",
+                  "",
+                  "pm.test('Error message provided', function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response).to.have.property('error');",
+                  "    pm.expect(response.error.message).to.include('API key');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Text Generation Tests",
+      "item": [
+        {
+          "name": "Basic Text Generation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"contents\": [\n    {\n      \"parts\": [\n        {\n          \"text\": \"Write a haiku about testing APIs\"\n        }\n      ]\n    }\n  ],\n  \"generationConfig\": {\n    \"temperature\": 0.7,\n    \"maxOutputTokens\": 100\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/{{api_version}}/models/{{model_name}}:generateContent?key={{GEMINI_API_KEY}}",
+              "host": ["{{base_url}}"],
+              "path": ["{{api_version}}", "models", "{{model_name}}:generateContent"],
+              "query": [
+                {
+                  "key": "key",
+                  "value": "{{GEMINI_API_KEY}}"
+                }
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const response = pm.response.json();",
+                  "",
+                  "TestUtils.validateGeminiResponse(response);",
+                  "TestUtils.validateUsageMetadata(response);",
+                  "TestUtils.validateTextContent(response, 20);",
+                  "TestUtils.validateFinishReason(response);",
+                  "TestUtils.measurePerformance();",
+                  "TestUtils.logDebugInfo(response);",
+                  "",
+                  "pm.test('Haiku characteristics', function () {",
+                  "    const text = response.candidates[0].content.parts[0].text;",
+                  "    const lines = text.split('\\n').filter(line => line.trim().length > 0);",
+                  "    pm.expect(lines.length).to.be.oneOf([3, 4, 5]); // Allow some flexibility",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Parameter Validation Test",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"contents\": [\n    {\n      \"parts\": [\n        {\n          \"text\": \"Test temperature settings\"\n        }\n      ]\n    }\n  ],\n  \"generationConfig\": {\n    \"temperature\": 2.5,\n    \"maxOutputTokens\": 50\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/{{api_version}}/models/{{model_name}}:generateContent?key={{GEMINI_API_KEY}}",
+              "host": ["{{base_url}}"],
+              "path": ["{{api_version}}", "models", "{{model_name}}:generateContent"],
+              "query": [
+                {
+                  "key": "key",
+                  "value": "{{GEMINI_API_KEY}}"
+                }
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Invalid parameter handling', function () {",
+                  "    if (pm.response.code >= 400) {",
+                  "        const response = pm.response.json();",
+                  "        pm.expect(response.error.message).to.include('temperature');",
+                  "    } else {",
+                  "        // Some APIs may clamp values instead of erroring",
+                  "        console.log('API accepted out-of-range temperature parameter');",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Error Handling Tests",
+      "item": [
+        {
+          "name": "Empty Request Test",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{base_url}}/{{api_version}}/models/{{model_name}}:generateContent?key={{GEMINI_API_KEY}}",
+              "host": ["{{base_url}}"],
+              "path": ["{{api_version}}", "models", "{{model_name}}:generateContent"],
+              "query": [
+                {
+                  "key": "key",
+                  "value": "{{GEMINI_API_KEY}}"
+                }
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Empty request handled', function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "",
+                  "ErrorHandlingTests.validateErrorResponse();"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Malformed JSON Test",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"contents\": [invalid json"
+            },
+            "url": {
+              "raw": "{{base_url}}/{{api_version}}/models/{{model_name}}:generateContent?key={{GEMINI_API_KEY}}",
+              "host": ["{{base_url}}"],
+              "path": ["{{api_version}}", "models", "{{model_name}}:generateContent"],
+              "query": [
+                {
+                  "key": "key",
+                  "value": "{{GEMINI_API_KEY}}"
+                }
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Malformed JSON rejected', function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "",
+                  "ErrorHandlingTests.validateErrorResponse();"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Load test utilities globally",
+          "if (!pm.globals.get('test_utilities')) {",
+          "    pm.sendRequest({",
+          "        url: 'file://' + pm.environment.get('workspace_path') + '/tests/api-validation-tests.js',",
+          "        method: 'GET'",
+          "    }, function (err, response) {",
+          "        if (!err) {",
+          "            pm.globals.set('test_utilities', response.text());",
+          "        }",
+          "    });",
+          "}",
+          "",
+          "// Set test run timestamp",
+          "pm.globals.set('test_start_time', new Date().toISOString());"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Global test logging",
+          "console.log(`Test: ${pm.info.requestName} - Status: ${pm.response.code} - Time: ${pm.response.responseTime}ms`);"
+        ]
+      }
+    }
+  ]
+}

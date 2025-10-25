@@ -1,0 +1,228 @@
+{
+  "info": {
+    "name": "Chat & Conversation",
+    "description": "Multi-turn conversations, chat functionality, and context management with Gemini models",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Start New Conversation",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"contents\": [\n    {\n      \"role\": \"user\",\n      \"parts\": [\n        {\n          \"text\": \"Hello! I'm a software developer working on a new web application. Can you help me plan the architecture?\"\n        }\n      ]\n    }\n  ],\n  \"generationConfig\": {\n    \"temperature\": 0.7,\n    \"topK\": 40,\n    \"topP\": 0.95,\n    \"maxOutputTokens\": 2048\n  },\n  \"safetySettings\": [\n    {\n      \"category\": \"HARM_CATEGORY_HARASSMENT\",\n      \"threshold\": \"BLOCK_MEDIUM_AND_ABOVE\"\n    }\n  ]\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/{{api_version}}/models/{{chat_model_name}}:generateContent?key={{GEMINI_API_KEY}}",
+          "host": ["{{base_url}}"],
+          "path": ["{{api_version}}", "models", "{{chat_model_name}}:generateContent"],
+          "query": [
+            {
+              "key": "key",
+              "value": "{{GEMINI_API_KEY}}"
+            }
+          ]
+        },
+        "description": "Initiates a new conversation with context setting. This request starts a conversation thread that can be continued in subsequent requests."
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Conversation started successfully', function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData.candidates).to.be.an('array');",
+              "    pm.expect(jsonData.candidates[0].content.parts[0].text).to.be.a('string');",
+              "});",
+              "",
+              "// Store conversation context for follow-up requests",
+              "if (pm.response.code === 200) {",
+              "    const response = pm.response.json();",
+              "    const assistantResponse = response.candidates[0].content.parts[0].text;",
+              "    ",
+              "    // Store conversation history",
+              "    pm.globals.set('conversation_history', JSON.stringify([",
+              "        {",
+              "            'role': 'user',",
+              "            'parts': [{'text': 'Hello! I\\'m a software developer working on a new web application. Can you help me plan the architecture?'}]",
+              "        },",
+              "        {",
+              "            'role': 'model',",
+              "            'parts': [{'text': assistantResponse}]",
+              "        }",
+              "    ]));",
+              "    ",
+              "    console.log('Conversation started. History stored.');",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Continue Conversation",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"contents\": [\n    {\n      \"role\": \"user\",\n      \"parts\": [\n        {\n          \"text\": \"Hello! I'm a software developer working on a new web application. Can you help me plan the architecture?\"\n        }\n      ]\n    },\n    {\n      \"role\": \"model\",\n      \"parts\": [\n        {\n          \"text\": \"{{assistant_previous_response}}\"\n        }\n      ]\n    },\n    {\n      \"role\": \"user\",\n      \"parts\": [\n        {\n          \"text\": \"Great! I'm specifically interested in building a microservices architecture. What are the key considerations I should keep in mind?\"\n        }\n      ]\n    }\n  ],\n  \"generationConfig\": {\n    \"temperature\": 0.7,\n    \"topK\": 40,\n    \"topP\": 0.95,\n    \"maxOutputTokens\": 2048\n  }\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/{{api_version}}/models/{{chat_model_name}}:generateContent?key={{GEMINI_API_KEY}}",
+          "host": ["{{base_url}}"],
+          "path": ["{{api_version}}", "models", "{{chat_model_name}}:generateContent"],
+          "query": [
+            {
+              "key": "key",
+              "value": "{{GEMINI_API_KEY}}"
+            }
+          ]
+        },
+        "description": "Continues an existing conversation by providing the full conversation history. This maintains context across multiple exchanges."
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// Load conversation history if available",
+              "const conversationHistory = pm.globals.get('conversation_history');",
+              "if (conversationHistory) {",
+              "    const history = JSON.parse(conversationHistory);",
+              "    if (history.length >= 2) {",
+              "        pm.environment.set('assistant_previous_response', history[1].parts[0].text);",
+              "    }",
+              "} else {",
+              "    pm.environment.set('assistant_previous_response', 'I\\'d be happy to help you plan your web application architecture! To provide the most relevant guidance, could you tell me more about...');",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Context-Aware Chat",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"system_instruction\": {\n    \"parts\": [\n      {\n        \"text\": \"You are an expert technical consultant helping with software architecture decisions. Maintain context throughout the conversation and provide detailed, actionable advice.\"\n      }\n    ]\n  },\n  \"contents\": [\n    {\n      \"role\": \"user\",\n      \"parts\": [\n        {\n          \"text\": \"I'm building an e-commerce platform that needs to handle high traffic during sales events. What architecture would you recommend?\"\n        }\n      ]\n    }\n  ],\n  \"generationConfig\": {\n    \"temperature\": 0.4,\n    \"topK\": 40,\n    \"topP\": 0.95,\n    \"maxOutputTokens\": 3072\n  }\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/{{api_version}}/models/{{chat_model_name}}:generateContent?key={{GEMINI_API_KEY}}",
+          "host": ["{{base_url}}"],
+          "path": ["{{api_version}}", "models", "{{chat_model_name}}:generateContent"],
+          "query": [
+            {
+              "key": "key",
+              "value": "{{GEMINI_API_KEY}}"
+            }
+          ]
+        },
+        "description": "Chat with system instructions for specialized domain expertise. Uses lower temperature for more focused, technical responses."
+      },
+      "response": []
+    },
+    {
+      "name": "Function Calling Chat",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"tools\": [\n    {\n      \"function_declarations\": [\n        {\n          \"name\": \"get_weather\",\n          \"description\": \"Get current weather information for a location\",\n          \"parameters\": {\n            \"type\": \"object\",\n            \"properties\": {\n              \"location\": {\n                \"type\": \"string\",\n                \"description\": \"The city and state/country\"\n              }\n            },\n            \"required\": [\"location\"]\n          }\n        }\n      ]\n    }\n  ],\n  \"contents\": [\n    {\n      \"role\": \"user\",\n      \"parts\": [\n        {\n          \"text\": \"What's the weather like in San Francisco?\"\n        }\n      ]\n    }\n  ],\n  \"generationConfig\": {\n    \"temperature\": 0.1,\n    \"maxOutputTokens\": 1024\n  }\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/{{api_version}}/models/{{chat_model_name}}:generateContent?key={{GEMINI_API_KEY}}",
+          "host": ["{{base_url}}"],
+          "path": ["{{api_version}}", "models", "{{chat_model_name}}:generateContent"],
+          "query": [
+            {
+              "key": "key",
+              "value": "{{GEMINI_API_KEY}}"
+            }
+          ]
+        },
+        "description": "Demonstrates function calling capabilities in chat. The model can call predefined functions to gather information or perform actions."
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Function call detected', function () {",
+              "    const jsonData = pm.response.json();",
+              "    if (jsonData.candidates[0].content.parts[0].functionCall) {",
+              "        pm.expect(jsonData.candidates[0].content.parts[0].functionCall).to.have.property('name');",
+              "        pm.expect(jsonData.candidates[0].content.parts[0].functionCall).to.have.property('args');",
+              "        console.log('Function call:', jsonData.candidates[0].content.parts[0].functionCall);",
+              "    }",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Streaming Chat",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"contents\": [\n    {\n      \"role\": \"user\",\n      \"parts\": [\n        {\n          \"text\": \"Explain the differences between SQL and NoSQL databases, including when to use each type.\"\n        }\n      ]\n    }\n  ],\n  \"generationConfig\": {\n    \"temperature\": 0.5,\n    \"topK\": 40,\n    \"topP\": 0.95,\n    \"maxOutputTokens\": 3072\n  }\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/{{api_version}}/models/{{chat_model_name}}:streamGenerateContent?key={{GEMINI_API_KEY}}",
+          "host": ["{{base_url}}"],
+          "path": ["{{api_version}}", "models", "{{chat_model_name}}:streamGenerateContent"],
+          "query": [
+            {
+              "key": "key",
+              "value": "{{GEMINI_API_KEY}}"
+            }
+          ]
+        },
+        "description": "Streaming chat for real-time conversation experiences. Useful for chatbot interfaces where you want to show responses as they're generated."
+      },
+      "response": []
+    }
+  ]
+}

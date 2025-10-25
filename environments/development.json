@@ -1,0 +1,119 @@
+{
+  "id": "gemini-dev-environment",
+  "name": "Gemini API - Development",
+  "values": [
+    {
+      "key": "GEMINI_API_KEY",
+      "value": "AIzaSyCrgFvspruL5bP48JXJVO0Zz1ILO_ZXr5c",
+      "description": "Google AI Studio API key for development environment",
+      "type": "secret",
+      "enabled": true
+    },
+    {
+      "key": "PROJECT_ID",
+      "value": "your-project-id-dev",
+      "description": "Google Cloud Project ID for development",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "base_url",
+      "value": "https://generativelanguage.googleapis.com",
+      "description": "Base URL for Gemini API",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "api_version",
+      "value": "v1beta",
+      "description": "API version for Gemini services",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "model_name",
+      "value": "gemini-2.0-flash",
+      "description": "Default model for text generation",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "vision_model_name",
+      "value": "gemini-2.0-flash",
+      "description": "Model for vision and multimodal tasks",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "chat_model_name",
+      "value": "gemini-2.0-flash",
+      "description": "Model for chat and conversation",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "code_model_name",
+      "value": "gemini-2.5-flash",
+      "description": "Model optimized for code generation",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "request_timeout",
+      "value": "30000",
+      "description": "Request timeout in milliseconds",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "rate_limit_requests_per_minute",
+      "value": "60",
+      "description": "Rate limit for development environment",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "max_output_tokens",
+      "value": "8192",
+      "description": "Maximum output tokens for development",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "default_temperature",
+      "value": "0.7",
+      "description": "Default temperature for creative tasks",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "safety_threshold",
+      "value": "BLOCK_MEDIUM_AND_ABOVE",
+      "description": "Default safety filtering level",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "environment_type",
+      "value": "development",
+      "description": "Environment identifier",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "debug_mode",
+      "value": "true",
+      "description": "Enable debug logging for development",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "mock_server_url",
+      "value": "http://localhost:3000",
+      "description": "Local mock server URL for testing",
+      "type": "default",
+      "enabled": true
+    }
+  ],
+  "_postman_variable_scope": "environment"
+}

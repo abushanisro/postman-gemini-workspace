@@ -1,0 +1,30 @@
+# Environment files with sensitive data
+*.env
+.env.*
+!.env.example
+
+# API Keys and secrets
+secrets/
+*.key
+*.pem
+
+# Postman generated files
+*.postman_dump
+
+# Node modules for automation scripts
+node_modules/
+npm-debug.log*
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log

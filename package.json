@@ -1,0 +1,36 @@
+{
+  "name": "postman-gemini-workspace",
+  "version": "1.0.0",
+  "description": "Comprehensive Postman workspace for Google Gemini APIs with collections, environments, tests, and documentation",
+  "main": "scripts/update-workspace.js",
+  "scripts": {
+    "validate": "node scripts/validate-collections.js",
+    "update": "node scripts/update-workspace.js",
+    "test": "newman run collections/gemini-api-collection.json -e environments/development.json",
+    "test:prod": "newman run collections/gemini-api-collection.json -e environments/production.json",
+    "mock": "node scripts/start-mock-server.js",
+    "docs": "node scripts/generate-docs.js"
+  },
+  "keywords": [
+    "postman",
+    "gemini",
+    "google",
+    "ai",
+    "api",
+    "testing",
+    "collection"
+  ],
+  "author": "GSoC Contributor",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "newman": "^5.3.2",
+    "postman-collection": "^4.1.0"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "express-rate-limit": "^6.7.0",
+    "axios": "^1.6.0",
+    "dotenv": "^16.3.0"
+  }
+}

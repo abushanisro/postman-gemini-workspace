@@ -1,0 +1,102 @@
+{
+  "info": {
+    "name": "Vision & Image Analysis",
+    "description": "Image understanding, visual question answering, and multi-modal capabilities using Gemini Vision models",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Basic Image Analysis",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"contents\": [\n    {\n      \"parts\": [\n        {\"text\": \"Describe what you see in this image in detail.\"},\n        {\"inline_data\": {\"mime_type\": \"image/jpeg\", \"data\": \"{{base64_image_data}}\"}}\n      ]\n    }\n  ],\n  \"generationConfig\": {\"temperature\": 0.4, \"topK\": 32, \"topP\": 0.8, \"maxOutputTokens\": 2048}\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/{{api_version}}/models/{{vision_model_name}}:generateContent?key={{GEMINI_API_KEY}}",
+          "host": ["{{base_url}}"],
+          "path": ["{{api_version}}", "models", "{{vision_model_name}}:generateContent"],
+          "query": [
+            {
+              "key": "key",
+              "value": "{{GEMINI_API_KEY}}"
+            }
+          ]
+        },
+        "description": "Basic image analysis and description. Replace {{base64_image_data}} with actual base64-encoded image data. Uses gemini-1.5-pro-vision or similar vision-capable model."
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// Set vision model if not already set",
+              "if (!pm.variables.get('vision_model_name')) {",
+              "    pm.variables.set('vision_model_name', 'gemini-1.5-pro');",
+              "}",
+              "// Example base64 image data (1x1 pixel red image for testing)",
+              "if (!pm.environment.get('base64_image_data')) {",
+              "    const exampleImage = '/9j/4AAQSkZJRgABAQEAYABgAAD//gA7Q1JFQVRPUjogZ2QtanBlZyB2MS4wICh1c2luZyBJSkcgSlBFRyB2OTApLCBxdWFsaXR5ID0gOTAK/9sAQwADAgIDAgIDAwMDBAMDBAUIBQUEBAUKBwcGCAwKDAwLCgsLDQ4SEA0OEQ4LCxAWEBETFBUVFQwPFxgWFBgSFBUU/9sAQwEDBAQFBAUJBQUJFA0LDRQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQU/8AAEQgAAQABAwEiAAIRAQMRAf/EAB8AAAEFAQEBAQEBAAAAAAAAAAABAgMEBQYHCAkKC//EALUQAAIBAwMCBAMFBQQEAAABfQECAwAEEQUSITFBBhNRYQcicRQygZGhCCNCscEVUtHwJDNicoIJChYXGBkaJSYnKCkqNDU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6g4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1tre4ubrCw8TFxsfIycrS09TV1tfY2drh4uPk5ebn6Onq8fLz9PX29/j5+v/EAB8BAAMBAQEBAQEBAQEAAAAAAAABAgMEBQYHCAkKC//EALURAAIBAgQEAwQHBQQEAAECdwABAgMRBAUhMQYSQVEHYXETIjKBkRRCobHwUsHRFfHhJPDxJTNyguLy8fLy8fLy8fLy8fLy8fLy8fLy8fLy8fLy8fLy8fLy8fLy8fLy8fLy8fLy8fLy8fLy8fL/2gAMAwEAAhEDEQA/APi3wn/wUQ+NnhLWbPWdF8aXlnqFjKk9vcQ6tdrJHKjBlYEMwOCMgg9RWl/w/wA+N/8A0XX4l/8AlY3H/wAeruP+H3P7Uf8A0G/A/wD4Vrwt/wDLmn/w+5/aj/6DfgX/AMK14W/+XNAH//Z';",
+              "    pm.environment.set('base64_image_data', exampleImage);",
+              "    console.log('Set example base64 image data for testing');",
+              "}"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Image analysis response received', function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData.candidates).to.be.an('array');",
+              "    pm.expect(jsonData.candidates[0].content.parts[0]).to.have.property('text');",
+              "    pm.expect(jsonData.candidates[0].content.parts[0].text).to.be.a('string');",
+              "    pm.expect(jsonData.candidates[0].content.parts[0].text.length).to.be.above(10);",
+              "});",
+              "pm.test('Vision model usage metadata', function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property('usageMetadata');",
+              "    if (jsonData.usageMetadata.promptTokenCount) {",
+              "        pm.expect(jsonData.usageMetadata.promptTokenCount).to.be.above(0);",
+              "    }",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Image Question Answering",
+      "request": {
+        "method": "POST",
+        "header": [
+          {"key": "Content-Type", "value": "application/json"}
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"contents\": [\n    {\n      \"parts\": [\n        {\"text\": \"What colors are prominent in this image? Are there any people visible? What is the main subject or focus of the image?\"},\n        {\"inline_data\": {\"mime_type\": \"image/png\", \"data\": \"{{base64_image_data}}\"}}\n      ]\n    }\n  ],\n  \"generationConfig\": {\"temperature\": 0.2, \"topK\": 20, \"topP\": 0.8, \"maxOutputTokens\": 1024}\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/{{api_version}}/models/{{vision_model_name}}:generateContent?key={{GEMINI_API_KEY}}",
+          "host": ["{{base_url}}"],
+          "path": ["{{api_version}}", "models", "{{vision_model_name}}:generateContent"],
+          "query": [{"key": "key", "value": "{{GEMINI_API_KEY}}"}]
+        },
+        "description": "Specific question answering about image content. Uses lower temperature for more factual, focused responses about visual elements."
+      },
+      "response": []
+    }
+  ]
+}
