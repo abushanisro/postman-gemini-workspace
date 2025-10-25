@@ -348,4 +348,4 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 
 ---
 
-*This workspace is not officially affiliated with Google or Postman. It's a GCOS project to help developers work with Gemini APIs more effectively.*# postman-gemini-workspace
+*This workspace is not officially affiliated with Google or Postman. It's a GCOS project to help developers work with Gemini APIs more effectively.
