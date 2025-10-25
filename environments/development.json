@@ -4,7 +4,7 @@
   "values": [
     {
       "key": "GEMINI_API_KEY",
-      "value": "AIzaSyCrgFvspruL5bP48JXJVO0Zz1ILO_ZXr5c",
+      "value": "AIxxxxxxxxxxxxxxxxxxxxxxx",
       "description": "Google AI Studio API key for development environment",
       "type": "secret",
       "enabled": true
